@@ -42,40 +42,34 @@ bool found(std::string word, char looking) {
 
 void colorize(const std::string& guess, const std::string& target, std::vector<int>& colors)
 {
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < colors.size(); i++)
 	{
 		if(found(target, guess[i])) colors[i]++;
 		
-		if (guess[i] == target[i])
-		{
-			colors[i]++;
-		}
+		if (guess[i] == target[i]) colors[i]++;
 	}
 
 }
 
-bool ifWon(const std::vector<int>& vec)
+bool CheckifWon(const std::vector<int>& vec)
 {
 	for (const auto& s : vec) {
 		if (s != 2) return false;
 	}
 	return true;
-
 }
 
 int main()
 {
 	std::cout << "LOADING...";
-	//system("Color 0A");
+
 	std::vector<std::string> five_words;
 	{
 		std::ifstream five_word_file("sgb-words.txt");
 		for (std::string line; std::getline(five_word_file, line); )
 		{
-			if (line.empty())
-			{
-				continue;
-			}
+			if (line.empty()) continue;
+			
 			five_words.push_back(line);
 		}
 	}
@@ -85,15 +79,13 @@ int main()
 		std::ifstream freq_word_file("20k.txt");
 		for (std::string line; std::getline(freq_word_file, line); )
 		{
-			if (line.empty())
-			{
-				continue;
-			}
+			if (line.empty()) continue;
+			
 			freq_words.push_back(line);
 		}
 	}
 
-	freq_words.resize(2000);
+	freq_words.resize(2000); // level adjustment 
 
 	auto filtered_words = get_intersection(five_words, freq_words);
 
@@ -103,10 +95,10 @@ int main()
 		std::uniform_int_distribution<int> dist(0, filtered_words.size() - 1);
 		const std::string target = filtered_words[dist(rng)];
 
-		std::cout << target;
+		//std::cout << target << std::endl; // - if u want to see correct anwser on top of console
 		bool Won = false;
-		std::cout << "=================================\n";
-		std::cout << "Guess a five letter word, you have also six chances: \n";
+		std::cout << "====================================================" << std::endl;
+		std::cout << "Guess a five letter word, you have also six chances: " << std::endl;
 
 		int chances = 5;
 		while (!Won && chances>0){
@@ -115,10 +107,7 @@ int main()
 			std::string guess;
 			std::getline(std::cin, guess);
 
-			for (auto& c : guess)
-			{
-				c = std::tolower(c);
-			}
+			for (auto& c : guess) c = std::tolower(c);					
 			
 			if (guess.size() != 5)
 			{
@@ -135,7 +124,8 @@ int main()
 			std::vector<int> color_word(5, 0);
 			colorize(guess, target, color_word);
 			
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < 5; i++)
+			{
 				int tmp = color_word[i];
 				switch (tmp) {
 				case 0:
@@ -152,20 +142,23 @@ int main()
 
 			std::cout << "\033[0m" << std::endl;
 			
-			
-			
-			Won = ifWon(color_word);
-			if (Won) std::cout << "YOU WON! ";
+			Won = CheckifWon(color_word);
+			if (Won) std::cout << "YOU WON!  ";
 			chances--;
 
 		}
-		std::cout << "Correct anwser: " <<target<< std::endl;
-		std::cout << "Wanna play again? (PRESS 1)" << std::endl;
+
+		if (chances == 0) {
+			std::cout << "YOU LOSE IDIOT! " << std::endl;
+			std::cout << "Correct anwser: " << target << std::endl;
+		}
+		std::cout << "Wanna play again?(PRESS 1) If not press any other key." << std::endl;
+
 		if (_getch() == '1') {
 			system("cls");
 			Won = false;
-		}
-		else break;
+		}else break;
+
 	}
 	return 0;
 }
