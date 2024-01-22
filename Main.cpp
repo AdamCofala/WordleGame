@@ -100,7 +100,7 @@ int main()
 		std::cout << "====================================================" << std::endl;
 		std::cout << "Guess a five letter word, you have also six chances: " << std::endl;
 
-		int chances = 5;
+		int chances = 6;
 		while (!Won && chances>0){
 		
 			
